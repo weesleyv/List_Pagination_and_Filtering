@@ -1,50 +1,127 @@
-/******************************************
-Treehouse Techdegree:
-FSJS project 2 - List Filter and Pagination
-******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
+const studentsLi = document.getElementsByClassName('student-item');
+const itemsToShow = 10;
+const names = document.querySelectorAll('h3');
 
 /*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
-
-
-
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
+   showPage function to hide all of the items in the 
    list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
 ***/
-
-
-
+const showPage = (list, page) => {
+  let startIndex = (page * itemsToShow) - itemsToShow;
+  let endIndex = page * itemsToShow;
+  for (let i = 0; i < list.length; i++) {
+    if (i >= startIndex && i < endIndex) {
+      list[i].style.display = 'list-item'
+    } else {
+      list[i].style.display = 'none';
+    }
+  }
+}
 
 /*** 
-   Create the `appendPageLinks function` to generate, append, and add 
+   appendPageLinks function to generate, append, and add 
    functionality to the pagination buttons.
 ***/
+const appendPageLinks = list => {
+  const divContainer = document.querySelector('.page');
+  const div = document.createElement('div');
+  div.className = 'pagination';
+  divContainer.appendChild(div);
+  
+  const ul = document.createElement('ul');
+  div.appendChild(ul);
+
+  const pages = Math.floor(list.length / itemsToShow) + 1; // how many pages per list
+  for (let i = 0; i < pages; i++) {   //iterating through pages to add same amount of links
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = '#';
+    link.textContent = i + 1;
+    if (i === 0) {
+      link.classList.add('active');
+    }
+    link.addEventListener('click', (e) => {     // onclick change page and remove/add class 'active' for every link
+      const allLinks = document.querySelectorAll('a');
+      for (let i = 0; i < allLinks.length; i++) {
+        allLinks[i].classList.remove('active')
+      }
+      e.target.classList.add('active');
+      showPage(studentsLi, e.target.textContent);
+    })
+
+    li.appendChild(link);
+    ul.appendChild(li);
+   
+  }
+}
+
+/*** 
+   searchComponent function to generate, append, and add 
+   functionality to the search field.
+***/
+const searchComponent = () => {
+  const pageHeader = document.querySelector('.page-header');
+  const div = document.createElement('div');
+  const input = document.createElement('input');
+  const button = document.createElement('button');
+  input.type = 'text';
+  input.setAttribute('id', 'search-field');
+  input.placeholder = 'search for students';
+  button.textContent = 'search';
+  pageHeader.appendChild(div);
+  div.appendChild(input);
+  div.appendChild(button);
+  
+  button.addEventListener('click',e => {
+    e.preventDefault();
+    searchFunc(input, names);
+  })
+  input.addEventListener('keyup', e => {
+    searchFunc(input, names);
+  })
+  
+}
+
+/*** 
+   removeLinks function to remove appended links
+***/
+const removeLinks = () => {
+  const links = document.getElementsByClassName('pagination');
+  for (let i = 0; i < links.length; i++) {
+    links[i].parentNode.removeChild(links[i]);
+  }
+}
+
+/*** 
+   searchFunc function to add 
+   functionality for the input field.
+***/
+const searchFunc = (searchInput, names) => { 
+  const inputValue = searchInput.value;
+  const searchResults = [];   // array to store searchResults
+
+  for (let i = 0; i < names.length; i++) {                    //  
+    let li = names[i].parentNode.parentNode;                  // iterating through names
+    const namesContent = names[i].textContent.toLowerCase();  // to check if names 'includes' input value
+    if (namesContent.includes(inputValue.toLowerCase())) {    //
+      li.style.display = 'list-item';
+      searchResults.push(li);
+    } else {
+      li.style.display = 'none';
+    }
+  }
+
+  removeLinks();
+  appendPageLinks(searchResults);
+  showPage(searchResults, 1);
+}
+
+showPage(studentsLi, 1);
+appendPageLinks(studentsLi);
+searchComponent();
 
 
 
 
 
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
