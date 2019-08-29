@@ -32,7 +32,7 @@ const appendPageLinks = list => {
   const ul = document.createElement('ul');
   div.appendChild(ul);
 
-  const pages = Math.floor(list.length / itemsToShow) + 1; // how many pages per list
+  const pages = Math.ceil(list.length / itemsToShow); // how many pages per list
   for (let i = 0; i < pages; i++) {   //iterating through pages to add same amount of links
     const li = document.createElement('li');
     const link = document.createElement('a');
@@ -102,7 +102,7 @@ const searchFunc = (searchInput, names) => {
   const searchResults = [];   // array to store searchResults
 
   for (let i = 0; i < names.length; i++) {                    //  
-    let li = names[i].parentNode.parentNode;                  // iterating through names
+    const li = names[i].parentNode.parentNode;                  // iterating through names
     const namesContent = names[i].textContent.toLowerCase();  // to check if names 'includes' input value
     if (namesContent.includes(inputValue.toLowerCase())) {    //
       li.style.display = 'list-item';
